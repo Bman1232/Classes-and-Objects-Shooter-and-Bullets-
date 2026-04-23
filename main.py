@@ -18,10 +18,11 @@ def playing_area():
     pen.end_fill()
     
 class Player(Turtle):
-    def __init__(self, x, y, color, screen, right_key, left_key):
+    def __init__(self, x, y, color, screen, right_key, left_key, fire_key):
         super().__init__()
         self.ht()
         self.speed(0)
+        self.player_color = color
         self.color(color)
         self.penup()
         self.goto(x,y)
@@ -32,6 +33,7 @@ class Player(Turtle):
         self.st()
         screen.onkeypress(self.turn_left, left_key)
         screen.onkeypress(self.turn_right, right_key)
+        screen.onkey(self.fire, fire_key)
 
     def turn_left(self):
         self.left(10)
@@ -45,7 +47,34 @@ class Player(Turtle):
             self.setheading(180 - self.heading())
         if self.ycor() > 230 or self.ycor() < -230:
             self.setheading(-self.heading())
+    
+    def fire(self):
+        self.bullets.append(Bullet(self))
 
+class Bullet(Turtle):
+    def __init__(self, player):
+        super().__init__()
+        self.ht()
+        self.player = player
+        self.speed(0)
+        self.color(player.player_color)
+        self.penup()
+        self.goto(player.xcor(), player.ycor())
+        self.seth(player.heading())
+        self.speed(5)
+        self.st()
+
+    def move(self, player):
+        self.forward(10)
+        if self.xcor() > 230 or self.xcor() < -230:
+            self.ht()
+            player.bullets.remove(self)
+        if self.ycor() > 230 or self.ycor() < -230:
+            self.ht()
+            player.bullets.remove(self)
+    
+    def die(self):
+        pass
 screen = Screen()
 screen.bgcolor("black")
 screen.setup(520,520)
@@ -55,12 +84,17 @@ screen.listen()
 
 playing_area()
 
-p1 = Player(-100, 0, "red",screen, "d", "a")
-p2 = Player(100,0,"blue",screen, "Right","Left")
+p1 = Player(-100, 0, "red",screen, "d", "a", "w")
+p2 = Player(100,0,"blue",screen, "Right","Left", "Up")
 
 while p1.alive and p2.alive:
     p1.move()
     p2.move()
+    for bullet in p1.bullets:
+        bullet.move(p1)
+    for bullet in p2.bullets:
+        bullet.move(p2)
+
 
 
 screen.exitonclick()
