@@ -94,14 +94,14 @@ screen.bgcolor("black")
 screen.setup(520,520)
 # Key Binding. Connects key presses and mouse clicks with function calls
 screen.listen()
-
+playing = True
 
 playing_area()
 
 p1 = Player(-100, 0, "red",screen, "d", "a", "w", 3, "red")
 p2 = Player(100,0,"blue",screen, "Right","Left", "Up", 3, "blue")
 
-while p1.alive and p2.alive:
+while playing:
     p1.move()
     p2.move()
     for bullet in p1.bullets:
@@ -120,10 +120,10 @@ while p1.alive and p2.alive:
     
     if p1.health < 1:
         p1.hideturtle()
-        p1.remove()
+        playing = False
     if p2.health < 1:
         p2.hideturtle()
-        p2.remove()
+        playing = False
 
 
 
